@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Властивості множення</title>
+<style>
+:root{
+  --bg:#f4f6fb; --card:#ffffff; --text:#1e2a3a; --muted:#6b7684;
+  --accent:#7c3aed; --good:#2e9e5b; --bad:#d94f4f; --border:#e2e6ee;
+  --grad1:#6d5efc; --grad2:#ff7ab8; --grad3:#ffb547;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f0f1a; --card:#1c1c2e; --text:#eeeeff; --muted:#a5a5c0;
+    --accent:#a78bfa; --good:#3fbf76; --bad:#f16b6b; --border:#33334d;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f0f1a; --card:#1c1c2e; --text:#eeeeff; --muted:#a5a5c0;
+  --accent:#a78bfa; --good:#3fbf76; --bad:#f16b6b; --border:#33334d;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+button,.tab,input{touch-action:manipulation;}
+body{
+  margin:0; color:var(--text); min-height:100%;
+  background:
+    radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--grad1) 35%, transparent), transparent 55%),
+    radial-gradient(circle at 90% 10%, color-mix(in srgb, var(--grad2) 30%, transparent), transparent 50%),
+    radial-gradient(circle at 50% 100%, color-mix(in srgb, var(--grad3) 25%, transparent), transparent 55%),
+    var(--bg);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+  display:flex; justify-content:center;
+}
+.wrap{width:100%; max-width:480px; padding:20px 16px 40px;}
+h1{
+  font-size:22px; text-align:center; margin:8px 0 4px; font-weight:800;
+  background:linear-gradient(90deg,var(--grad1),var(--grad2),var(--grad3));
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.sub{text-align:center; color:var(--muted); font-size:13px; margin-bottom:16px;}
+.tabs{display:flex; gap:6px; margin-bottom:12px;}
+.tab{
+  flex:1; text-align:center; padding:12px 4px; border-radius:12px; min-height:44px;
+  background:var(--card); border:1px solid var(--border); cursor:pointer;
+  font-size:13px; font-weight:600; color:var(--muted); user-select:none; line-height:1.3;
+  display:flex; align-items:center; justify-content:center;
+}
+.tab.active{background:linear-gradient(135deg,var(--grad1),var(--grad2)); color:#fff; border-color:transparent;}
+.rule{
+  text-align:center; font-size:14px; font-weight:600; color:var(--accent);
+  background:var(--card); border:1px dashed var(--accent); border-radius:12px;
+  padding:8px 10px; margin-bottom:12px;
+}
+.card{
+  background:var(--card); border:1px solid var(--border); border-radius:18px;
+  padding:20px; margin-bottom:16px; position:relative; overflow:hidden;
+  box-shadow:0 10px 30px -12px color-mix(in srgb, var(--grad1) 40%, transparent);
+}
+.card::before{content:''; position:absolute; top:0; left:0; right:0; height:5px; background:linear-gradient(90deg,var(--grad1),var(--grad2),var(--grad3));}
+.stats{display:flex; justify-content:space-between; font-size:13px; padding:0 6px; margin-bottom:10px;}
+.stats span{background:var(--card); border:1px solid var(--border); border-radius:10px; padding:6px 12px; color:var(--muted);}
+.stats b{color:var(--accent); font-size:15px;}
+.expr{text-align:center; font-size:26px; font-weight:800; color:var(--accent); margin-bottom:18px; line-height:1.4; word-break:break-word;}
+.row{display:flex; gap:10px; margin-bottom:12px;}
+input[type=number]{
+  flex:1; font-size:20px; padding:12px; border-radius:12px; border:2px solid var(--accent); min-height:48px;
+  background:var(--bg); color:var(--text); text-align:center; width:100%; -moz-appearance:textfield;
+}
+input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none; margin:0;}
+button{font-size:16px; font-weight:700; padding:14px 16px; border-radius:12px; border:none; cursor:pointer; width:100%; min-height:48px;}
+.btn-primary{background:linear-gradient(135deg,var(--grad1),var(--grad2)); color:#fff; box-shadow:0 6px 16px -6px color-mix(in srgb, var(--grad2) 60%, transparent);}
+.btn-secondary{background:transparent; color:var(--accent); border:2px solid var(--accent); margin-top:8px;}
+.feedback{min-height:26px; text-align:center; font-weight:700; margin:8px 0 4px; font-size:15px;}
+.feedback.good{color:var(--good);} .feedback.bad{color:var(--bad);}
+.explain{
+  font-size:14px; color:var(--muted); background:var(--bg); border-radius:10px; padding:10px 12px;
+  margin-top:8px; line-height:1.5; display:none; border:1px dashed var(--border); text-align:center;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🔢 Властивості множення</h1>
+  <div class="sub">Усний рахунок: зручно групуй множники</div>
+
+  <div class="tabs">
+    <div class="tab active" id="tabAssoc">Сполучна</div>
+    <div class="tab" id="tabDistr">Розподільна</div>
+    <div class="tab" id="tabMixed">Змішано</div>
+  </div>
+
+  <div class="rule" id="rule"></div>
+
+  <div class="stats">
+    <span>Правильно: <b id="score">0</b></span>
+    <span>Питання: <b id="qnum">1</b></span>
+  </div>
+
+  <div class="card">
+    <div class="expr" id="expr"></div>
+    <div class="row"><input type="number" id="answer" placeholder="Відповідь" inputmode="numeric"></div>
+    <button class="btn-primary" id="checkBtn">Перевірити</button>
+    <div class="feedback" id="feedback"></div>
+    <div class="explain" id="explain"></div>
+    <button class="btn-secondary" id="nextBtn" style="display:none;">Наступне завдання →</button>
+  </div>
+</div>
+
+<script>
+function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+function pick(arr){ return arr[randInt(0,arr.length-1)]; }
+
+const RULES = {
+  assoc: 'Сполучна: (a · b) · c = a · (b · c)',
+  distr: 'Розподільна: a · c + b · c = (a + b) · c',
+  mixed: 'Обери зручний спосіб: групуй або виноси спільний множник'
+};
+
+function genAssoc(){
+  let p, q, m;
+  if(Math.random() < 0.5){
+    p = 2; q = 5;
+    do { m = randInt(12,99); } while(m % 10 === 0);
+  } else if(Math.random() < 0.7){
+    [p,q] = pick([[4,25],[2,50],[5,20]]);
+    m = Math.random() < 0.8 ? randInt(2,9) : randInt(10,19);
+  } else {
+    [p,q] = pick([[125,8],[200,5]]);
+    m = randInt(2,9);
+  }
+  const order = Math.random() < 0.5 ? [p,m,q] : [q,m,p];
+  const result = p*q*m;
+  return {
+    display: order.join(' · ') + ' =',
+    correct: result,
+    explain: '(' + p + ' · ' + q + ') · ' + m + ' = ' + (p*q) + ' · ' + m + ' = ' + result
+  };
+}
+
+function genDistr(){
+  const type = Math.random() < 0.12 ? 2 : pick([1,3]);
+  let a, b, c, sign, total;
+  if(type === 1){
+    do { a = randInt(11,89); } while(a === 50);
+    b = 100 - a; c = Math.random() < 0.8 ? randInt(2,9) : randInt(10,40); sign = '+'; total = 100;
+  } else if(type === 2){
+    a = pick([150,250,350,450,550,650,750,850]);
+    b = 1000 - a; c = randInt(2,9); sign = '+'; total = 1000;
+  } else {
+    b = randInt(11,89); a = b + 100; c = Math.random() < 0.8 ? randInt(2,9) : randInt(10,40); sign = '−'; total = 100;
+  }
+  const left = Math.random() < 0.5;
+  const t1 = left ? c + ' · ' + a : a + ' · ' + c;
+  const t2 = left ? c + ' · ' + b : b + ' · ' + c;
+  const result = total * c;
+  return {
+    display: t1 + ' ' + sign + ' ' + t2 + ' =',
+    correct: result,
+    explain: '(' + a + ' ' + sign + ' ' + b + ') · ' + c + ' = ' + total + ' · ' + c + ' = ' + result
+  };
+}
+
+const exprEl = document.getElementById('expr');
+const ruleEl = document.getElementById('rule');
+const answerEl = document.getElementById('answer');
+const feedbackEl = document.getElementById('feedback');
+const explainEl = document.getElementById('explain');
+const checkBtn = document.getElementById('checkBtn');
+const nextBtn = document.getElementById('nextBtn');
+const scoreEl = document.getElementById('score');
+const qnumEl = document.getElementById('qnum');
+const tabs = {
+  assoc: document.getElementById('tabAssoc'),
+  distr: document.getElementById('tabDistr'),
+  mixed: document.getElementById('tabMixed')
+};
+
+let mode = 'assoc';
+let score = 0, qnum = 1;
+let current = null;
+let answered = false;
+
+function newQuestion(){
+  answered = false;
+  feedbackEl.textContent = ''; feedbackEl.className = 'feedback';
+  explainEl.style.display = 'none'; explainEl.textContent = '';
+  answerEl.value = ''; answerEl.disabled = false;
+  checkBtn.style.display = 'block'; nextBtn.style.display = 'none';
+
+  const kind = mode === 'mixed' ? (Math.random() < 0.5 ? 'assoc' : 'distr') : mode;
+  current = kind === 'assoc' ? genAssoc() : genDistr();
+  exprEl.textContent = current.display;
+  qnumEl.textContent = qnum;
+  answerEl.focus();
+}
+
+function checkAnswer(){
+  if(answered) return;
+  const val = parseInt(answerEl.value, 10);
+  if(isNaN(val)){
+    feedbackEl.textContent = 'Введи число'; feedbackEl.className = 'feedback bad';
+    return;
+  }
+  answered = true;
+  answerEl.disabled = true;
+  checkBtn.style.display = 'none'; nextBtn.style.display = 'block';
+  if(val === current.correct){
+    score++; scoreEl.textContent = score;
+    feedbackEl.textContent = '✅ Правильно!'; feedbackEl.className = 'feedback good';
+  } else {
+    feedbackEl.textContent = '❌ Правильна відповідь: ' + current.correct;
+    feedbackEl.className = 'feedback bad';
+  }
+  explainEl.textContent = 'Зручний спосіб: ' + current.explain;
+  explainEl.style.display = 'block';
+}
+
+function switchMode(newMode){
+  mode = newMode;
+  Object.keys(tabs).forEach(k => tabs[k].classList.toggle('active', k === newMode));
+  ruleEl.textContent = RULES[newMode];
+  score = 0; qnum = 1; scoreEl.textContent = 0;
+  newQuestion();
+}
+
+checkBtn.addEventListener('click', checkAnswer);
+answerEl.addEventListener('keydown', e => { if(e.key === 'Enter') checkAnswer(); });
+nextBtn.addEventListener('click', () => { qnum++; newQuestion(); });
+tabs.assoc.addEventListener('click', () => switchMode('assoc'));
+tabs.distr.addEventListener('click', () => switchMode('distr'));
+tabs.mixed.addEventListener('click', () => switchMode('mixed'));
+
+switchMode('assoc');
+</script>
+</body>
+</html>
